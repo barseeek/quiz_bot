@@ -1,13 +1,13 @@
 import logging
 import random
+from enum import Enum
 
 import environs
 import redis
 from telegram import Update, ReplyKeyboardRemove
 from telegram.ext import Updater, MessageHandler, Filters, CallbackContext, ConversationHandler, CommandHandler
-from enum import Enum
 
-from keyboards import QUIZ_BOARD
+from keyboards import TG_BOARD
 from log import TelegramLogsHandler
 from quiz import get_questions
 
@@ -22,7 +22,7 @@ def start(update: Update, context: CallbackContext) -> STATES:
     message = 'Добро пожаловать в викторину! Для начала нажмите "Новый вопрос"'
     update.message.reply_text(
         text=message,
-        reply_markup=QUIZ_BOARD
+        reply_markup=TG_BOARD
     )
     return STATES.QUESTION
 
@@ -30,13 +30,13 @@ def start(update: Update, context: CallbackContext) -> STATES:
 def handle_new_question_request(update: Update, context: CallbackContext) -> STATES:
     logger.info('Получено сообщение в tg "{}" от {}'.format(update.message.text, update.effective_chat.id))
 
-    redis_ = context.bot_data['redis']
+    redis_ = context.bot_data['redis_client']
     message = random.choice(list(context.bot_data['questions']))
     redis_.set(update.effective_chat.id, message)
 
     update.message.reply_text(
         text=message,
-        reply_markup=QUIZ_BOARD
+        reply_markup=TG_BOARD
     )
     return STATES.ANSWER
 
@@ -44,7 +44,7 @@ def handle_new_question_request(update: Update, context: CallbackContext) -> STA
 def handle_solution_attempt(update: Update, context: CallbackContext) -> STATES:
     logger.info('Получено сообщение в tg "{}" от {}'.format(update.message.text, update.effective_chat.id))
     state = STATES.QUESTION
-    redis_ = context.bot_data['redis']
+    redis_ = context.bot_data['redis_client']
     message = update.message.text
     question = redis_.get(update.effective_chat.id)
     answer = context.bot_data['questions'].get(question)
@@ -56,28 +56,28 @@ def handle_solution_attempt(update: Update, context: CallbackContext) -> STATES:
         state = STATES.ANSWER
     update.message.reply_text(
         text=message,
-        reply_markup=QUIZ_BOARD
+        reply_markup=TG_BOARD
     )
     return state
 
 
-def handle_skip_question_request(update: Update, context:CallbackContext) -> STATES:
+def handle_skip_question_request(update: Update, context: CallbackContext) -> STATES:
     logger.info('Получено сообщение в tg "{}" от {}'.format(update.message.text, update.effective_chat.id))
 
-    redis_ = context.bot_data['redis']
+    redis_ = context.bot_data['redis_client']
     question = redis_.get(update.effective_chat.id)
     answer = context.bot_data['questions'].get(question)
     message = 'Правильный ответ - {}'.format(answer)
     update.message.reply_text(
         text=message,
-        reply_markup=QUIZ_BOARD
+        reply_markup=TG_BOARD
     )
 
     question = random.choice(list(context.bot_data['questions']))
     redis_.set(update.effective_chat.id, question)
     update.message.reply_text(
         text=question,
-        reply_markup=QUIZ_BOARD
+        reply_markup=TG_BOARD
     )
     return STATES.ANSWER
 
@@ -93,12 +93,12 @@ def cancel(update: Update, context: CallbackContext) -> int:
 
 def reply_to_user(update: Update, context: CallbackContext) -> None:
     logger.info('Получено сообщение в tg "{}" от {}'.format(update.message.text, update.effective_chat.id))
-    redis_ = context.bot_data['redis']
+    redis_ = context.bot_data['redis_client']
     message = update.message.text
 
     update.message.reply_text(
         text=message,
-        reply_markup=QUIZ_BOARD
+        reply_markup=TG_BOARD
     )
 
 
@@ -122,10 +122,9 @@ def main():
     updater = Updater(env.str('TELEGRAM_BOT_TOKEN'))
     dispatcher = updater.dispatcher
 
-    dispatcher.bot_data['questions'] = get_questions(env.str('FILENAME_QUIZ', 'questions.txt'))
-    dispatcher.bot_data['redis'] = r
+    dispatcher.bot_data['questions'] = get_questions(env.str('FILENAME_QUIZ', '../questions.txt'))
+    dispatcher.bot_data['redis_client'] = r
 
-    #dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, reply_to_user))
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
 
