@@ -1,6 +1,9 @@
 import logging
 import random
 from enum import Enum
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '')))
 
 import environs
 import redis
@@ -122,7 +125,7 @@ def main():
     updater = Updater(env.str('TELEGRAM_BOT_TOKEN'))
     dispatcher = updater.dispatcher
 
-    dispatcher.bot_data['questions'] = get_questions(env.str('FILENAME_QUIZ', '../questions.txt'))
+    dispatcher.bot_data['questions'] = get_questions(env.str('FILENAME_QUIZ', 'questions.txt'))
     dispatcher.bot_data['redis_client'] = r
 
     conv_handler = ConversationHandler(

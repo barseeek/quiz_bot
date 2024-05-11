@@ -1,5 +1,8 @@
 import logging
 import random
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '')))
 
 import redis
 import vk_api
@@ -105,7 +108,7 @@ def main():
         password=env.str('REDIS_PASSWORD'),
         decode_responses=True
     )
-    questions = get_questions(env.str('FILENAME_QUIZ', '../questions.txt'))
+    questions = get_questions(env.str('FILENAME_QUIZ', 'questions.txt'))
 
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
