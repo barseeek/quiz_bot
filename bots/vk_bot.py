@@ -6,7 +6,7 @@ import vk_api
 from environs import Env
 from vk_api.longpoll import VkLongPoll, VkEventType
 
-from bots.keyboards import VK_BOARD
+from keyboards import VK_BOARD
 from log import TelegramLogsHandler
 from quiz import get_questions
 
