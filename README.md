@@ -23,8 +23,8 @@
 3. Получите токены доступов и настройте переменные окружения как описано ниже.
 4. Запустите ботов
     ```bash   
-    python tg_bot.py
-    python vk_bot.py
+    python bots/tg_bot.py
+    python bots/vk_bot.py
     ```   
 
 ## Как настроить
@@ -39,5 +39,5 @@ LANGUAGE_CODE=Языковой код (например, ru-RU).
 TELEGRAM_CHAT_ID=Идентификатор пользователя Telegram для логгирования.
 LOG_LEVEL=Уровень логгирования.
 VK_ACCESS_TOKEN=Токен доступа Vkontakte.
-FILENAME_QUIZ=путь к файлу с вопросами, по умолчанию "../questions.txt"
+FILENAME_QUIZ=имя файла с вопросами, по умолчанию "questions.txt", лежит в корневой папке проекта
 ```
