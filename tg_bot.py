@@ -1,9 +1,6 @@
 import logging
 import random
-from enum import Enum
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '')))
+from enum import Enum, auto
 
 import environs
 import redis
@@ -18,7 +15,9 @@ logger = logging.getLogger('bot')
 
 
 class STATES(Enum):
-    QUESTION, ANSWER, SKIP = range(3)
+    QUESTION = auto()
+    ANSWER = auto()
+    SKIP = auto()
 
 
 def start(update: Update, context: CallbackContext) -> STATES:

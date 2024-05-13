@@ -23,8 +23,8 @@
 3. Получите токены доступов и настройте переменные окружения как описано ниже.
 4. Запустите ботов
     ```bash   
-    python bots/tg_bot.py
-    python bots/vk_bot.py
+    python tg_bot.py
+    python vk_bot.py
     ```   
 
 ## Как настроить

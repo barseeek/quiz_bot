@@ -22,5 +22,3 @@ TG_BOARD = ReplyKeyboardMarkup(
 )
 
 VK_BOARD = get_vk_keyboard()
-
-

@@ -1,8 +1,5 @@
 import logging
 import random
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '')))
 
 import redis
 import vk_api
@@ -27,7 +24,7 @@ def reply_to_user(event, vk_api):
     )
 
 
-def new_question_request(event, vk_api, redis_client, questions):
+def handle_new_question_request(event, vk_api, redis_client, questions):
     logger.info('Пришло новое сообщение в VK "{}" от {}'.format(event.text, event.user_id))
 
     message = random.choice(list(questions))
@@ -41,7 +38,7 @@ def new_question_request(event, vk_api, redis_client, questions):
     )
 
 
-def solution_attempt(event, vk_api, redis_client, questions):
+def handle_solution_attempt(event, vk_api, redis_client, questions):
     logger.info('Пришло новое сообщение в VK "{}" от {}'.format(event.text, event.user_id))
 
     message = event.text
@@ -113,11 +110,11 @@ def main():
     for event in longpoll.listen():
         if event.type == VkEventType.MESSAGE_NEW and event.to_me:
             if event.text == 'Новый вопрос':
-                new_question_request(event, vk_get_api, r, questions)
+                handle_new_question_request(event, vk_get_api, r, questions)
             elif event.text == 'Сдаться':
                 skip_question_request(event, vk_get_api, r, questions)
             else:
-                solution_attempt(event, vk_get_api, r, questions)
+                handle_solution_attempt(event, vk_get_api, r, questions)
 
 
 if __name__ == '__main__':
